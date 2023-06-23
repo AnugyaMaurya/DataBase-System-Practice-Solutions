@@ -84,3 +84,60 @@ GROUP BY 1
 HAVING COUNT(employee_id) > 1)
 GROUP BY 1
 
+Q13 write a SQL query to find those employees who work in the same department as ‘Clara’. Exclude all those records where first name is ‘Clara’. Return first name, last name and hire date.
+SELECT first_name, last_name, hire_date  
+FROM employees  
+WHERE department_id =  
+( SELECT department_id  
+FROM employees  
+WHERE first_name = 'Clara')  
+AND first_name <> 'Clara';
+
+Q14  write a SQL query to find the employee whose salary is 3000 and reporting person’s ID is 121. Return all fields.
+SELECT * 
+FROM employees 
+WHERE (salary,manager_id)=
+(SELECT 3000,121);
+
+Q15 write a SQL query to find those employees who earn more than the average salary and work in the same department as an employee whose first name contains the letter 'J'. Return employee ID, first name and salary.
+SELECT employee_id, first_name , salary  
+FROM employees  
+WHERE salary > 
+(SELECT AVG (salary)  
+FROM employees ) 
+AND  department_id IN 
+( SELECT department_id  
+FROM employees  
+WHERE first_name LIKE '%J%');
+
+Q16 write a SQL query to check whether there are any employees with salaries exceeding 3700. Return first name, last name and department ID.
+SELECT first_name, last_name, department_id 
+FROM employees 
+WHERE EXISTS 
+(SELECT * 
+FROM employees 
+WHERE salary >3700 );
+
+Q17 Write a query to display the employee id, name ( first name and last name ), salary and the SalaryStatus column with a title HIGH and LOW respectively for those employees whose salary is more than and less than the average salary of all employees.
+SELECT  employee_id,  first_name, last_name, salary,  
+CASE WHEN salary >= (SELECT AVG(salary) 
+FROM employees) THEN 'HIGH'  
+ELSE 'LOW'  
+END AS SalaryStatus 
+FROM employees;
+
+Q18 From the following table, write a SQL query to find those employees who manage a department. Return all the fields of employees table.
+SELECT * 
+FROM employees 
+WHERE employee_id=ANY 
+( SELECT manager_id FROM departments );
+
+
+Q19 write a SQL query to find those managers who supervise four or more employees. Return manager name, department ID.
+SELECT first_name || ' ' || last_name AS Manager_name,department_id
+	FROM employees 
+		WHERE employee_id IN 
+		(SELECT manager_id 
+		FROM employees 
+			GROUP BY manager_id 
+			HAVING COUNT(*)>=4);
